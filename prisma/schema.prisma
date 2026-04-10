@@ -4,10 +4,64 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../app/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
+
+model Student {
+  id             String       @id @default(uuid())
+  name           String
+  cpf            String       @unique
+  phone          String
+  emergencyPhone String?
+  
+  // Oficinas que o aluno participa
+  workshops      Workshop[]
+  
+  // Registro de presenças
+  attendances    Attendance[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("students")
+}
+
+model Workshop {
+  id          String       @id @default(uuid())
+  name        String       @unique // Ex: "Canto", "Percussão"
+  description String?
+  
+  // Alunos matriculados
+  students    Student[]
+  
+  // Registro de chamadas
+  attendances Attendance[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("workshops")
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  date       DateTime @default(now())
+  isPresent  Boolean  @default(true)
+  
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  String
+  
+  workshop   Workshop @relation(fields: [workshopId], references: [id])
+  workshopId String
+
+  createdAt  DateTime @default(now())
+
+  @@index([date])
+  @@map("attendances")
+}
+

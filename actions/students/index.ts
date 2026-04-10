@@ -1,0 +1,77 @@
+"use server"
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+export type StudentActionState = {
+  success: boolean;
+  message: string;
+  errors?: Record<string, string>;
+};
+
+import { studentSchema, type StudentSchema } from "./schema";
+
+export async function createStudentAction(data: StudentSchema): Promise<StudentActionState> {
+  const result = studentSchema.safeParse(data);
+
+  if (!result.success) {
+    return {
+      success: false,
+      message: "Dados inválidos.",
+      errors: result.error.flatten().fieldErrors as Record<string, string>,
+    };
+  }
+
+  const { name, cpf, phone, emergencyPhone, workshops } = result.data;
+
+  try {
+    const student = await prisma.student.create({
+      data: {
+        name,
+        cpf,
+        phone,
+        emergencyPhone: emergencyPhone || null,
+        workshops: {
+          connect: workshops.map((name) => ({ name })),
+        },
+      },
+    });
+
+    revalidatePath("/dashboard");
+    
+    return {
+      success: true,
+      message: `Estudante ${student.name} cadastrado com sucesso!`,
+    };
+  } catch (error) {
+    console.error("Erro ao criar estudante:", error);
+    
+    if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
+      return {
+        success: false,
+        message: "Este CPF já está cadastrado no sistema.",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Erro interno ao cadastrar estudante. Tente novamente.",
+    };
+  }
+}
+export async function getStudents() {
+  try {
+    const students = await prisma.student.findMany({
+      include: {
+        workshops: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return students;
+  } catch (error) {
+    console.error("Erro ao buscar estudantes:", error);
+    return [];
+  }
+}
