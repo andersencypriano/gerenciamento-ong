@@ -10,13 +10,17 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("🚀 Iniciando Seed robusto conforme o schema...");
 
+   // 0. Limpeza completa (Ordem importa!)
+  console.log("Cleaning database...");
+  await prisma.attendance.deleteMany();
+  await prisma.student.deleteMany();
+  await prisma.workshop.deleteMany();
+
   // 1. Criar Oficinas (Workshops)
   console.log("🎨 Criando oficinas...");
   const workshopsData = [
-    { name: "Canto", description: "Técnica vocal e performance coral." },
+    { name: "Capoeira", description: "A arte suave que mistura luta, dança e música." },
     { name: "Percussão", description: "Ritmos e instrumentos de percussão." },
-    { name: "Violão", description: "Teoria e prática instrumental de violão." },
-    { name: "Teclado", description: "Piano e síntese musical." },
     { name: "Dança", description: "Movimento e expressão corporal." },
   ];
 
@@ -39,21 +43,21 @@ async function main() {
       cpf: "123.456.789-01",
       phone: "(11) 98888-0001",
       emergencyPhone: "(11) 97777-0001",
-      workshopNames: ["Canto", "Percussão"],
+      workshopNames: ["Capoeira", "Percussão"],
     },
     {
       name: "Maria Oliveira",
       cpf: "234.567.890-02",
       phone: "(11) 98888-0002",
       emergencyPhone: "(11) 97777-0002",
-      workshopNames: ["Percussão", "Violão", "Teclado"],
+      workshopNames: ["Percussão", "Dança"],
     },
     {
       name: "Pedro Santos",
       cpf: "345.678.901-03",
       phone: "(11) 98888-0003",
       emergencyPhone: null,
-      workshopNames: ["Canto", "Dança"],
+      workshopNames: ["Capoeira", "Dança"],
     },
   ];
 
