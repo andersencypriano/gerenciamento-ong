@@ -57,7 +57,7 @@ const data = {
       items: [
         {
           title: "Cadastrar Aluno",
-          url: "#",
+          url: "/dashboard/students/cadastro",
         },
         {
           title: "Listar Alunos",

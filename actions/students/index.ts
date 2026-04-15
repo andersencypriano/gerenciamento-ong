@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
 export type StudentActionState = {
   success: boolean;
@@ -9,16 +10,22 @@ export type StudentActionState = {
   errors?: Record<string, string>;
 };
 
-import { studentSchema, type StudentSchema } from "./schema";
+import { createStudentSchema } from "../../schemas/students/createStudentSchema";
+type StudentSchema = z.infer<typeof createStudentSchema>;
 
 export async function createStudentAction(data: StudentSchema): Promise<StudentActionState> {
-  const result = studentSchema.safeParse(data);
+  const result = createStudentSchema.safeParse(data);
 
   if (!result.success) {
     return {
       success: false,
       message: "Dados inválidos.",
-      errors: result.error.flatten().fieldErrors as Record<string, string>,
+      errors: Object.fromEntries(
+        Object.entries(result.error.flatten().fieldErrors).map(([key, value]) => [
+          key,
+          value ? value[0] : "",
+        ])
+      ),
     };
   }
 

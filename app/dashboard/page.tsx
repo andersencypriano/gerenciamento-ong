@@ -1,5 +1,5 @@
-import CardTotal from "./students/components/cards/cardTotal";
-import TableStudents from "./students/components/tableStudents/tableStudents";
+import CardTotal from "./students/_components/cards/cardTotal";
+import TableStudents from "./students/_components/tableStudents/tableStudents";
 
 export default async function HomeDashboard() {
 
