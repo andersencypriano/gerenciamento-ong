@@ -1,6 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { Workshop } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -10,10 +11,9 @@ export type StudentActionState = {
   errors?: Record<string, string>;
 };
 
-import { createStudentSchema } from "../../schemas/students/createStudentSchema";
-type StudentSchema = z.infer<typeof createStudentSchema>;
+import { createStudentSchema } from "@/schemas/students/createStudentSchema";
 
-export async function createStudentAction(data: StudentSchema): Promise<StudentActionState> {
+export async function createStudentAction(data: z.infer<typeof createStudentSchema>): Promise<StudentActionState> {
   const result = createStudentSchema.safeParse(data);
 
   if (!result.success) {

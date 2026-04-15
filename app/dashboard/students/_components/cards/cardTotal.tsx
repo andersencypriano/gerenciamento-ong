@@ -1,4 +1,4 @@
-import { getStudents } from "@/actions/students"
+import { getStudents } from "@/actions/students/student"
 import { IconUsers } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 

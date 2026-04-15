@@ -3,8 +3,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { createStudentSchema } from "@/schemas/students/createStudentSchema"
 import { z } from "zod"
-import { createStudentAction } from "@/actions/students"
+import { createStudentAction } from "@/actions/students/student"
+import { getAllWorkshops } from "@/actions/workshop/workshops"
 import { toast } from "sonner"
+import { useState, useEffect } from "react"
+import { Workshop } from "@prisma/client"
 
 import {
 	Form,
@@ -17,8 +20,12 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+
 
 export default function CreateUserForm() {
+
 	const form = useForm({
 		resolver: zodResolver(createStudentSchema),
 		defaultValues: {
@@ -58,7 +65,15 @@ export default function CreateUserForm() {
 		}
 	}
 
+	const [workshops, setWorkshops] = useState<Workshop[]>([])
 
+	useEffect(() => {
+		const fetchWorkshops = async () => {
+			const data = await getAllWorkshops();
+			setWorkshops(data);
+		}
+		fetchWorkshops()
+	}, [])
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-lg mx-auto p-6 bg-card rounded-xl border shadow-sm">
@@ -120,6 +135,40 @@ export default function CreateUserForm() {
 							<FormControl>
 								<Input placeholder="(00) 00000-0000" {...field} />
 							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="workshops"
+					render={({ field }) => (
+						<FormItem className="space-y-3">
+							<FormLabel>Oficinas</FormLabel>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-lg bg-muted/30 max-h-[200px] overflow-y-auto">
+								{workshops.map((workshop) => (
+									<div key={workshop.id} className="flex items-center space-x-2">
+										<Checkbox
+											id={workshop.id}
+											checked={field.value?.includes(workshop.name) || false}
+											onCheckedChange={(checked) => {
+												const currentValue = field.value || []
+												const newValue = checked
+													? [...currentValue, workshop.name]
+													: currentValue.filter((v: string) => v !== workshop.name)
+												field.onChange(newValue)
+											}}
+										/>
+										<Label
+											htmlFor={workshop.id}
+											className="text-sm font-normal cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+										>
+											{workshop.name}
+										</Label>
+									</div>
+								))}
+							</div>
 							<FormMessage />
 						</FormItem>
 					)}
