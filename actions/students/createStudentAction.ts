@@ -1,7 +1,6 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
-import { Workshop } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -64,21 +63,5 @@ export async function createStudentAction(data: z.infer<typeof createStudentSche
       success: false,
       message: "Erro interno ao cadastrar estudante. Tente novamente.",
     };
-  }
-}
-export async function getStudents() {
-  try {
-    const students = await prisma.student.findMany({
-      include: {
-        workshops: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
-    return students;
-  } catch (error) {
-    console.error("Erro ao buscar estudantes:", error);
-    return [];
   }
 }

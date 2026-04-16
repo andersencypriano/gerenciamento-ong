@@ -1,4 +1,4 @@
-import { getStudents } from "@/actions/students/student"
+import { getAllStudents } from "@/actions/students/getAllStudents"
 import { IconUsers } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 
@@ -16,7 +16,7 @@ interface CardTotalProps {
 }
 
 export default async function CardTotal({ students }: CardTotalProps = {}) {
-  const studentData = students ?? await getStudents();
+  const studentData = students ?? await getAllStudents();
   return (
     <>
       <Card className="@container/card">

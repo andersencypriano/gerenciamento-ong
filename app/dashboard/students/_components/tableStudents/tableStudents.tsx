@@ -1,6 +1,6 @@
 import { columns, Student } from "./columns"
 import { DataTable } from "./data-table"
-import { getStudents } from "@/actions/students/student"
+import { getStudents } from "@/actions/students/createStudentAction"
 
 async function getData(): Promise<Student[]> {
   const students = await getStudents();
