@@ -1,6 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { deleteStudentSchema } from "@/schemas/students/deleteStudentSchema";
 import { revalidatePath } from "next/cache";
@@ -42,8 +43,11 @@ export async function deleteStudentAction(data: z.infer<typeof deleteStudentSche
       success: true,
       message: `Estudante ${student.name} deletado com sucesso!`,
     };
-  } catch (error: any) {
-    if (error.code === "P2025") {
+  } catch (error: unknown) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return {
         success: false,
         message: "Estudante não encontrado ou já deletado.",
