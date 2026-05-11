@@ -1,11 +1,16 @@
 "use client"
 
 import {
+  ColumnFiltersState,
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 import {
   Table,
@@ -25,14 +30,38 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
   const table = useReactTable({
     data,
     columns,
+    state: {
+      columnFilters,
+    },
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   })
 
   return (
-    <div className="overflow-hidden rounded-md border">
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <Input
+          type="date"
+          value={(table.getColumn("createdAt")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("createdAt")?.setFilterValue(event.target.value)
+          }
+          className="max-w-xs"
+        />
+        <Button
+          variant="outline"
+          onClick={() => table.getColumn("createdAt")?.setFilterValue("")}
+        >
+          Limpar filtro
+        </Button>
+      </div>
+      <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -75,6 +104,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   )
 }

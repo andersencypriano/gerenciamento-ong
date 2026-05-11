@@ -3,14 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createStudentSchema } from "@/schemas/students/createStudentSchema";
 
 export type StudentActionState = {
   success: boolean;
   message: string;
   errors?: Record<string, string>;
-};
-
-import { createStudentSchema } from "@/schemas/students/createStudentSchema";
+};  
 
 export async function createStudentAction(data: z.infer<typeof createStudentSchema>): Promise<StudentActionState> {
   const result = createStudentSchema.safeParse(data);

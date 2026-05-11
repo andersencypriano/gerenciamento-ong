@@ -42,15 +42,19 @@ export async function deleteStudentAction(data: z.infer<typeof deleteStudentSche
       success: true,
       message: `Estudante ${student.name} deletado com sucesso!`,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return {
+        success: false,
+        message: "Estudante não encontrado ou já deletado.",
+      };
+    }
+
     console.error("Erro ao deletar estudante:", error);
     
     return {
       success: false,
       message: "Erro interno ao deletar estudante. Tente novamente.",
-      errors: {
-        cpf: "Erro interno ao deletar estudante. Tente novamente.",
-      },
     };
   }
 }
