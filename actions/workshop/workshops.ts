@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function getAllWorkshops(){
+export async function getAllWorkshops() {
   try {
     const workshops = await prisma.workshop.findMany({
       orderBy: {
